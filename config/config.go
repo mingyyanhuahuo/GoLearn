@@ -1,0 +1,49 @@
+package config
+
+import (
+	"fmt"
+
+	"github.com/spf13/viper"
+)
+
+type Config struct {
+	Mysql  MysqlConfig  `yaml:"mysql"`
+	JWT    JWTConfig    `yaml:"jwt"`
+	Server ServerConfig `yaml:"server"`
+}
+type MysqlConfig struct {
+	Dsn      string `yaml:"dsn"`
+	Port     string `yaml:"port"`
+	Host     string `yaml:"host"`
+	User     string `yaml:"user"`
+	Password string `yaml:"password"`
+}
+type JWTConfig struct {
+	Secret string `yaml:"secret"`
+}
+type ServerConfig struct {
+	Port string `yaml:"port"`
+	Host string `yaml:"host"`
+}
+type RedisConfig struct {
+	Host     string `yaml:"host"`
+	Port     string `yaml:"port"`
+	Password string `yaml:"password"`
+}
+
+var config *Config
+
+func init() {
+	viper.SetConfigName("config") // 配置文件名（不带扩展名）
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath("./config") // 配置文件路径
+	if err := viper.ReadInConfig(); err != nil {
+		panic(fmt.Errorf("读取配置文件失败: %w", err))
+	}
+	if erro := viper.Unmarshal(&config); erro != nil {
+		panic(fmt.Errorf("解析配置文件失败: %w", erro))
+	}
+}
+func GetConfig() *Config {
+	return config
+}

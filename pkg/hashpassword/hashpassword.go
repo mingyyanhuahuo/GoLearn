@@ -1,4 +1,4 @@
-package hashcom
+package hashpassword
 
 import (
 	"golang.org/x/crypto/bcrypt"
