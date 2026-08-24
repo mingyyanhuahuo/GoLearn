@@ -34,3 +34,10 @@ func GetDetailedPostById(postId uint) (model.Post, error) {
 	}).Preload("Comments.Author").First(&post, postId).Error
 	return post, err
 }
+func GetPostPageHot(page uint) ([]model.Post, error) {
+	var posts []model.Post
+	result := db.Preload("Author").
+		Order("(like_count*2 + comment_count*5)/POWER(TIMESTAMPDIFF(HOUR, created_at, NOW()) + 2, 1.5) DESC").
+		Limit(15).Offset(int((page - 1) * 15)).Find(&posts)
+	return posts, result.Error
+}

@@ -1,0 +1,14 @@
+{"level":"info","ts":1787544657.1544032,"msg":"日志服务启动","port":"8080"}
+{"level":"info","ts":1787547608.8179958,"msg":"日志服务启动","port":"8080"}
+{"level":"info","ts":1787548335.8786917,"msg":"日志服务启动","port":"8080"}
+{"level":"info","ts":1787548354.5315142,"msg":"请求日志","method":"GET","path":"/api/v1/posts","status":200,"duration":0.0029997,"client_ip":"::1","user_id":0}
+{"level":"info","ts":1787548354.6124983,"msg":"请求日志","method":"GET","path":"/api/v1/posts/99999","status":200,"duration":0.0017985,"client_ip":"::1","user_id":0}
+{"level":"info","ts":1787548354.6809666,"msg":"请求日志","method":"POST","path":"/api/v1/posts/likes","status":200,"duration":0.00121,"client_ip":"::1","user_id":6}
+{"level":"info","ts":1787550601.1560202,"msg":"日志服务启动","port":"8080"}
+{"level":"info","ts":1787550610.470942,"msg":"请求日志","user_id":0,"status":200,"method":"GET","path":"/api/v1/posts","duration":0.0021421,"client_ip":"::1"}
+{"level":"warn","ts":1787550610.5421896,"msg":"请求日志","user_id":0,"status":404,"error":"帖子不存在","method":"GET","path":"/api/v1/posts/99999","duration":0.0014283,"client_ip":"::1"}
+{"level":"info","ts":1787553080.2509212,"msg":"请求日志","user_id":0,"status":200,"method":"GET","path":"/api/v1/posts","duration":0.0020633,"client_ip":"::1"}
+{"level":"info","ts":1787553080.3574061,"msg":"请求日志","user_id":0,"status":200,"method":"GET","path":"/api/v1/posts","duration":0.0025182,"client_ip":"::1"}
+{"level":"info","ts":1787553135.942308,"msg":"日志服务启动","port":"8080"}
+{"level":"info","ts":1787553145.7872303,"msg":"请求日志","user_id":0,"status":200,"method":"GET","path":"/api/v1/posts","duration":0.0034291,"client_ip":"::1"}
+{"level":"info","ts":1787553145.9148965,"msg":"请求日志","user_id":0,"status":200,"method":"GET","path":"/api/v1/posts","duration":0.0012612,"client_ip":"::1"}

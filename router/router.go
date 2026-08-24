@@ -13,6 +13,7 @@ func InitRouter(r *gin.Engine) {
 	api.POST("/login", handler.Login)
 	api.GET("/posts", handler.ListPosts)
 	api.GET("/posts/:post_id", handler.GetDetailedPost)
+	api.GET("/posts/hot", handler.ListPosts)
 	auth := api.Group("", middleware.AuthMiddleware())
 	auth.POST("/posts", handler.CreatePost)
 	auth.DELETE("/posts/:post_id", handler.DeletePost)

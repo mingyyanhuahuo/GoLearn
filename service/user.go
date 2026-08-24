@@ -3,19 +3,19 @@ package service
 import (
 	"day_4_1/dao"
 	"day_4_1/model"
+	"day_4_1/pkg/errcode"
 	"day_4_1/pkg/hashpassword"
 	"day_4_1/pkg/jwtutil"
-	"fmt"
 )
 
 func RegisterUser(username, password, phone string) (model.User, error) {
 	_, err := dao.GetUserByUsername(username)
 	if err == nil {
-		return model.User{}, fmt.Errorf("用户名已存在")
+		return model.User{}, errcode.ErrExistingUser
 	}
 	passwordHash, err := hashpassword.RegisterHashPassword(password)
 	if err != nil {
-		return model.User{}, fmt.Errorf("密码哈希失败")
+		return model.User{}, errcode.ErrInternalServerError
 	}
 	user := &model.User{
 		Username:    username,
@@ -27,18 +27,18 @@ func RegisterUser(username, password, phone string) (model.User, error) {
 }
 func Login(username, password string) (string, error) {
 	if username == "" || password == "" {
-		return "", fmt.Errorf("用户名或密码不能为空")
+		return "", errcode.ErrBadRequest
 	}
 	user, err := dao.GetUserByUsername(username)
 	if err != nil {
-		return "", fmt.Errorf("用户或密码错误")
+		return "", errcode.ErrBadRequest
 	}
 	if err := hashpassword.LogincompareHashAndPassword(user.PassHash, password); err != nil {
-		return "", fmt.Errorf("用户或密码错误")
+		return "", errcode.ErrBadRequest
 	}
 	token, err := jwtutil.GenerateToken(user.Id, user.Role)
 	if err != nil {
-		return "", fmt.Errorf("生成token失败")
+		return "", errcode.ErrInternalServerError
 	}
 	return token, nil
 }

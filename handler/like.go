@@ -1,9 +1,9 @@
 package handler
 
 import (
+	"day_4_1/pkg/errcode"
 	"day_4_1/pkg/response"
 	"day_4_1/service"
-	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -20,17 +20,17 @@ func ToggleLike(c *gin.Context) {
 	postIdStr := c.Param("post_id")
 	postId, err := strconv.Atoi(postIdStr)
 	if err != nil {
-		response.Err(c, http.StatusBadRequest, "帖子ID格式错误")
+		c.Error(errcode.New(400, 10000, "帖子ID格式错误: "+err.Error()))
 		return
 	}
 	userId, exists := c.Get("id")
 	if !exists {
-		response.Err(c, http.StatusUnauthorized, "用户未登录")
+		c.Error(errcode.ErrUnauthorized)
 		return
 	}
 	err = service.ToggleLike(uint(postId), userId.(uint))
 	if err != nil {
-		response.Err(c, http.StatusBadRequest, err.Error())
+		c.Error(err)
 		return
 	}
 	response.OK(c, "操作成功")
@@ -38,17 +38,17 @@ func ToggleLike(c *gin.Context) {
 func GetLikePostIds(c *gin.Context) {
 	var req LikePostReq
 	if err := c.ShouldBindJSON(&req); err != nil {
-		response.Err(c, http.StatusBadRequest, "请求参数错误: "+err.Error())
+		c.Error(errcode.New(400, 10000, "请求参数错误: "+err.Error()))
 		return
 	}
 	userId, exists := c.Get("id")
 	if !exists {
-		response.Err(c, http.StatusUnauthorized, "用户未登录")
+		c.Error(errcode.ErrUnauthorized)
 		return
 	}
 	likePostIds, err := service.GetLikePostIds(req.PostIds, userId.(uint))
 	if err != nil {
-		response.Err(c, http.StatusBadRequest, err.Error())
+		c.Error(err)
 		return
 	}
 	response.OK(c, LikePostIdsResp{PostIds: likePostIds})
