@@ -21,6 +21,7 @@ func InitRouter(r *gin.Engine) {
 	auth.DELETE("/comments/:comment_id", handler.DeleteComment)
 	auth.POST("/posts/:post_id/like", handler.ToggleLike)
 	auth.POST("/posts/likes", handler.GetLikePostIds)
+	auth.POST("/agent/chat", handler.AgentChat)
 	admin := auth.Group("admin", middleware.AuthMiddleware(), middleware.AdminMiddleware())
 	admin.DELETE("/posts/:post_id", handler.DeletePost)
 }
