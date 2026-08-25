@@ -1,6 +1,8 @@
 # GoLearn — 精弘网络大作业(Go 后端)
-打开docs可以查看我的开发历程以及开发的学习安排
-当然啦这份read.me和developmnet也是我拿
+
+
+#打开docs可以查看我的开发历程以及开发的学习安排
+#当然啦这份read.me和developmnet是我拿ai总结的
 
 招新社团大作业:基于 Gin + GORM  +  Redis 的论坛后端采用,**11 个接口全部完成 + 4 项进阶全部落地**。
 
