@@ -28,12 +28,12 @@ func ToggleLike(c *gin.Context) {
 		c.Error(errcode.ErrUnauthorized)
 		return
 	}
-	err = service.ToggleLike(uint(postId), userId.(uint))
+	liked, err := service.ToggleLike(uint(postId), userId.(uint))
 	if err != nil {
 		c.Error(err)
 		return
 	}
-	response.OK(c, "操作成功")
+	response.OK(c, gin.H{"post_id": postId, "is_liked": liked})
 }
 func GetLikePostIds(c *gin.Context) {
 	var req LikePostReq

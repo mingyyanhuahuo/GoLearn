@@ -12,3 +12,53 @@
 {"level":"info","ts":1787553135.942308,"msg":"日志服务启动","port":"8080"}
 {"level":"info","ts":1787553145.7872303,"msg":"请求日志","user_id":0,"status":200,"method":"GET","path":"/api/v1/posts","duration":0.0034291,"client_ip":"::1"}
 {"level":"info","ts":1787553145.9148965,"msg":"请求日志","user_id":0,"status":200,"method":"GET","path":"/api/v1/posts","duration":0.0012612,"client_ip":"::1"}
+{"level":"info","ts":1787590880.328595,"msg":"日志服务启动","port":"8080"}
+{"level":"info","ts":1787590886.0947616,"msg":"请求日志","user_id":0,"status":200,"method":"GET","path":"/api/v1/posts","duration":0.0014049,"client_ip":"::1"}
+{"level":"info","ts":1787590898.8909976,"msg":"请求日志","user_id":0,"status":200,"method":"POST","path":"/api/v1/login","duration":0.0432425,"client_ip":"::1"}
+{"level":"info","ts":1787590903.0503855,"msg":"请求日志","user_id":6,"status":200,"method":"POST","path":"/api/v1/posts/9/like","duration":0.0010177,"client_ip":"::1"}
+{"level":"info","ts":1787590907.5922952,"msg":"请求日志","user_id":6,"status":200,"method":"POST","path":"/api/v1/posts/9/like","duration":0.0011839,"client_ip":"::1"}
+{"level":"info","ts":1787590907.7351453,"msg":"请求日志","user_id":6,"status":200,"method":"POST","path":"/api/v1/posts/9/like","duration":0.0007555,"client_ip":"::1"}
+{"level":"info","ts":1787590907.8161151,"msg":"请求日志","user_id":6,"status":200,"method":"POST","path":"/api/v1/posts/likes","duration":0,"client_ip":"::1"}
+{"level":"info","ts":1787590920.877774,"msg":"请求日志","user_id":0,"status":200,"method":"GET","path":"/api/v1/posts/9","duration":0.0030055,"client_ip":"::1"}
+{"level":"info","ts":1787590945.8312545,"msg":"请求日志","user_id":6,"status":200,"method":"POST","path":"/api/v1/posts/9/like","duration":0.0005171,"client_ip":"::1"}
+{"level":"info","ts":1787590951.9749427,"msg":"请求日志","user_id":0,"status":200,"method":"GET","path":"/api/v1/posts/9","duration":0.0005772,"client_ip":"::1"}
+{"level":"info","ts":1787592179.5993643,"msg":"日志服务启动","port":"8080"}
+{"level":"info","ts":1787592187.1965826,"msg":"请求日志","user_id":6,"status":200,"method":"POST","path":"/api/v1/posts/9/like","duration":0.0005026,"client_ip":"::1"}
+{"level":"info","ts":1787592198.6506243,"msg":"请求日志","user_id":0,"status":200,"method":"GET","path":"/api/v1/posts/9","duration":0.001189,"client_ip":"::1"}
+{"level":"info","ts":1787592198.824808,"msg":"请求日志","user_id":6,"status":200,"method":"POST","path":"/api/v1/posts/9/like","duration":0.0005403,"client_ip":"::1"}
+{"level":"info","ts":1787592211.0235624,"msg":"请求日志","user_id":0,"status":200,"method":"GET","path":"/api/v1/posts/9","duration":0.0020499,"client_ip":"::1"}
+{"level":"error","ts":1787592411.0310025,"msg":"同步点赞数据到数据库失败","error":"dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it."}
+{"level":"info","ts":1787628048.0443149,"msg":"日志服务启动","port":"8080"}
+{"level":"info","ts":1787628078.0798998,"msg":"日志服务启动","port":"8080"}
+{"level":"info","ts":1787628089.4928408,"msg":"请求日志","user_id":0,"status":200,"method":"GET","path":"/api/v1/posts/9","duration":0.0016495,"client_ip":"::1"}
+{"level":"warn","ts":1787628089.564965,"msg":"请求日志","user_id":0,"status":401,"error":"未登录或登录已过期","method":"POST","path":"/api/v1/posts/9/like","duration":0,"client_ip":"::1"}
+{"level":"info","ts":1787628092.9944768,"msg":"请求日志","user_id":0,"status":200,"method":"POST","path":"/api/v1/login","duration":0.0434011,"client_ip":"::1"}
+{"level":"info","ts":1787628093.084718,"msg":"请求日志","user_id":6,"status":200,"method":"POST","path":"/api/v1/posts/9/like","duration":0.0005044,"client_ip":"::1"}
+{"level":"info","ts":1787628104.390379,"msg":"请求日志","user_id":0,"status":200,"method":"GET","path":"/api/v1/posts/9","duration":0.0020939,"client_ip":"::1"}
+{"level":"info","ts":1787628111.0357862,"msg":"请求日志","user_id":6,"status":200,"method":"POST","path":"/api/v1/posts/9/like","duration":0.0005055,"client_ip":"::1"}
+{"level":"info","ts":1787628123.2302446,"msg":"请求日志","user_id":0,"status":200,"method":"GET","path":"/api/v1/posts/9","duration":0.001804,"client_ip":"::1"}
+{"level":"info","ts":1787628123.2928996,"msg":"请求日志","user_id":6,"status":200,"method":"POST","path":"/api/v1/posts/9/like","duration":0.0010087,"client_ip":"::1"}
+{"level":"info","ts":1787628130.4258313,"msg":"请求日志","user_id":0,"status":200,"method":"GET","path":"/api/v1/posts/9","duration":0.0011002,"client_ip":"::1"}
+{"level":"info","ts":1787628130.4971366,"msg":"请求日志","user_id":6,"status":200,"method":"POST","path":"/api/v1/posts/likes","duration":0,"client_ip":"::1"}
+{"level":"info","ts":1787628197.5743847,"msg":"日志服务启动","port":"8080"}
+{"level":"info","ts":1787628246.3340204,"msg":"日志服务启动","port":"8080"}
+{"level":"info","ts":1787628260.4006357,"msg":"接收到退出信号，正在同步点赞数据到数据库..."}
+{"level":"info","ts":1787628260.405249,"msg":"点赞数据同步完成，程序退出"}
+{"level":"info","ts":1787628265.7717903,"msg":"日志服务启动","port":"8080"}
+{"level":"error","ts":1787628302.193038,"msg":"同步点赞数据到数据库失败","error":"dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it."}
+{"level":"error","ts":1787628307.6650903,"msg":"同步点赞数据到数据库失败","error":"dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it."}
+{"level":"error","ts":1787628312.6482332,"msg":"同步点赞数据到数据库失败","error":"dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it."}
+{"level":"error","ts":1787628317.6389546,"msg":"同步点赞数据到数据库失败","error":"dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it."}
+{"level":"error","ts":1787628322.592612,"msg":"同步点赞数据到数据库失败","error":"dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it."}
+{"level":"error","ts":1787628327.5791812,"msg":"同步点赞数据到数据库失败","error":"dial tcp [::1]:6379: connectex: No connection could be made because the target machine actively refused it."}
+{"level":"info","ts":1787628355.9727206,"msg":"接收到退出信号，正在同步点赞数据到数据库..."}
+{"level":"info","ts":1787628355.98184,"msg":"点赞数据同步完成，程序退出"}
+{"level":"info","ts":1787628364.918954,"msg":"日志服务启动","port":"8080"}
+{"level":"info","ts":1787628440.4047513,"msg":"日志服务启动","port":"8080"}
+{"level":"info","ts":1787628461.4150772,"msg":"日志服务启动","port":"8080"}
+{"level":"info","ts":1787628500.8299305,"msg":"接收到退出信号，正在同步点赞数据到数据库..."}
+{"level":"info","ts":1787628500.8379025,"msg":"点赞数据同步完成，程序退出"}
+{"level":"info","ts":1787628602.537763,"msg":"日志服务启动","port":"8080"}
+{"level":"info","ts":1787628641.1167998,"msg":"请求日志","user_id":0,"status":200,"method":"GET","path":"/api/v1/posts","duration":0.0011769,"client_ip":"::1"}
+{"level":"info","ts":1787628682.750548,"msg":"接收到退出信号，正在同步点赞数据到数据库..."}
+{"level":"info","ts":1787628682.7580018,"msg":"点赞数据同步完成，程序退出"}

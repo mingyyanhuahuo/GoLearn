@@ -5,15 +5,15 @@ import (
 	"day_4_1/pkg/errcode"
 )
 
-func ToggleLike(postId, userId uint) error {
+func ToggleLike(postId, userId uint) (bool, error) {
 	if _, err := dao.GetPostById(postId); err != nil {
-		return errcode.ErrNotFoundPost
+		return false, errcode.ErrNotFoundPost
 	}
-	err := dao.ToggleLike(postId, userId)
+	liked, err := dao.ToggleLike(postId, userId)
 	if err != nil {
-		return errcode.ErrDatabase
+		return false, errcode.ErrDatabase
 	}
-	return nil
+	return liked, nil
 }
 func GetLikePostIds(postids []uint, userId uint) ([]uint, error) {
 	likePostIds, err := dao.GetLikePostIds(postids, userId)

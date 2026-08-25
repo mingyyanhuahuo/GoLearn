@@ -10,6 +10,7 @@ type Config struct {
 	Mysql  MysqlConfig  `yaml:"mysql"`
 	JWT    JWTConfig    `yaml:"jwt"`
 	Server ServerConfig `yaml:"server"`
+	Redis  RedisConfig  `yaml:"redis"`
 }
 type MysqlConfig struct {
 	Dsn      string `yaml:"dsn"`
