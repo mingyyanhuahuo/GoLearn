@@ -93,10 +93,10 @@
 
 ```bash
 # 1. 先启动服务(go run .),然后:
-python tests/full_regression.py   # 全功能回归 45/45:注册/登录/帖子/评论/点赞/删除/权限/admin/Agent
+python tests/full_regression.py   # 全功能回归 58/58:注册/登录/帖子/评论/点赞/删除/权限/admin/Agent
 bash tests/curl_biz_test.sh       # 业务 curl 全流程:11 接口走查 + Agent(列表→翻页→草稿→确认→重复确认404)
 ```
 
 > 数据库密码从本地 `config/config.yaml` 读取(脚本本身不含任何密码)。
 
-实测结果:全功能回归 **45/45 通过**,Agent 业务 curl 全流程(列表 → 多轮续接翻页 → 详情 → 草稿生成 → 二次确认落库 → 重复确认 404 → 未登录 401)全部通过。
+实测结果:全功能回归 **58/58 通过**,Agent 业务 curl 全流程(列表 → 多轮续接翻页 → 详情 → 草稿生成 → 二次确认落库 → 重复确认 404 → 未登录 401)全部通过。Agent 专项 20 项:关键词变体(列表/详情/查看)、LastTool 续接边界(纯数字续接详情、发草稿后翻页兜底)、草稿权限(他人确认 404)、确认落库可查、会话间 LastTool 隔离、confirm 不带编号兜底。
