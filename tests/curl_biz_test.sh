@@ -2,13 +2,33 @@
 # ============================================================
 # 业务 curl 全流程测试(对应 01-功能清单 11 接口)
 # 用法:bash curl_biz_test.sh
-# 幂等性:每次运行使用随机用户名,可重复执行(历史测试数据不影响结果)
+# 重置:运行前自动清空数据库(仅保留正式账号 stu001 及其帖子)和 Redis 残留
+# 幂等性:每次运行使用随机用户名,可重复执行
 # 中文安全:请求体写 UTF-8 文件 + curl -d @file(不经过代码页转换)
 # ============================================================
 BASE=http://localhost:8080/api/v1
+# 脚本目录定位(从任意位置运行都找得到 config.yaml)
+SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 DIR=/tmp/curl_biz
 mkdir -p $DIR
 PJ() { python -c "import sys,json;sys.stdout.reconfigure(encoding='utf-8');d=json.loads(sys.stdin.buffer.read().decode('utf-8'));print($1)"; }
+
+# ===== 运行前重置数据库 / Redis(密码从本地 config.yaml 读取,不进仓库) =====
+MYSQL_EXE=$(command -v mysql || echo "/c/Program Files/MySQL/MySQL Server 8.0/bin/mysql.exe")
+REDIS_CLI=$(command -v redis-cli || echo "/c/Users/22254/Redis-x64-5.0.14.1/redis-cli.exe")
+MYSQL_PWD=$(grep -E '^\s+password:' "$SCRIPT_DIR/../config/config.yaml" | head -1 | awk '{print $2}')
+MYSQL_DB=$(grep -E '^\s+database:' "$SCRIPT_DIR/../config/config.yaml" | head -1 | awk '{print $2}')
+echo "########## 0. 重置数据库(仅保留 stu001) ##########"
+MYSQL_PWD="$MYSQL_PWD" "$MYSQL_EXE" -uroot -e "
+USE $MYSQL_DB;
+SET @sid := (SELECT id FROM users WHERE username='stu001' LIMIT 1);
+DELETE FROM likes WHERE user_id <> COALESCE(@sid, -1) OR post_id NOT IN (SELECT id FROM posts WHERE author_id=COALESCE(@sid, -1));
+DELETE FROM comments WHERE author_id <> COALESCE(@sid, -1) OR post_id NOT IN (SELECT id FROM posts WHERE author_id=COALESCE(@sid, -1));
+DELETE FROM posts WHERE author_id <> COALESCE(@sid, -1);
+DELETE FROM users WHERE username <> 'stu001';" && echo "数据库已重置"
+"$REDIS_CLI" --scan --pattern "post:likes:*" 2>/dev/null | xargs -r "$REDIS_CLI" del >/dev/null 2>&1
+"$REDIS_CLI" --scan --pattern "agent:*" 2>/dev/null | xargs -r "$REDIS_CLI" del >/dev/null 2>&1
+"$REDIS_CLI" --scan --pattern "rate_limit:*" 2>/dev/null | xargs -r "$REDIS_CLI" del >/dev/null 2>&1
 
 # 随机后缀:注册全新用户,可重复跑
 TS=$(date +%s)

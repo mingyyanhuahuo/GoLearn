@@ -1,12 +1,76 @@
 # -*- coding: utf-8 -*-
 # 全功能回归测试:注册/登录/帖子/评论/点赞/删除/权限/admin/Agent
 # 用法:先启动服务(go run .),然后 python tests/full_regression.py
-# 幂等性:每次运行使用随机用户名,可重复执行(历史测试数据不影响结果)
-import json, sys, time, urllib.request, urllib.error
+# 重置:运行前自动清空数据库(仅保留正式账号 stu001 及其帖子)和 Redis 残留
+# 幂等性:每次运行使用随机用户名,可重复执行
+import json, os, re, shutil, subprocess, sys, time, urllib.request, urllib.error
 
 sys.stdout.reconfigure(encoding="utf-8")
 
 BASE = "http://localhost:8080/api/v1"
+
+
+# ===== 运行前重置数据库 / Redis =====
+def _read_cfg():
+    """从本地 config/config.yaml 读取数据库密码和库名(密码不进脚本、不进仓库)"""
+    cfg = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "config", "config.yaml")
+    with open(cfg, encoding="utf-8") as f:
+        txt = f.read()
+    return (re.search(r"^\s+password:\s*(\S+)", txt, re.M).group(1),
+            re.search(r"^\s+database:\s*(\S+)", txt, re.M).group(1))
+
+
+def _find_cmd(names, fallback):
+    for n in names:
+        p = shutil.which(n)
+        if p:
+            return p
+    return fallback if os.path.exists(fallback) else None
+
+
+def reset_db():
+    """清空测试数据,仅保留 stu001 及其帖子(回到交付时的干净状态)"""
+    exe = _find_cmd(["mysql"], r"C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe")
+    if not exe:
+        print("[跳过] 未找到 mysql 客户端,跳过数据库重置")
+        return
+    pwd, db = _read_cfg()
+    sql = ("SET @sid := (SELECT id FROM users WHERE username='stu001' LIMIT 1);"
+           "DELETE FROM likes WHERE user_id <> COALESCE(@sid, -1) "
+           "OR post_id NOT IN (SELECT id FROM posts WHERE author_id=COALESCE(@sid, -1));"
+           "DELETE FROM comments WHERE author_id <> COALESCE(@sid, -1) "
+           "OR post_id NOT IN (SELECT id FROM posts WHERE author_id=COALESCE(@sid, -1));"
+           "DELETE FROM posts WHERE author_id <> COALESCE(@sid, -1);"
+           "DELETE FROM users WHERE username <> 'stu001';")
+    env = dict(os.environ, MYSQL_PWD=pwd)  # 密码走环境变量,不进命令行
+    r = subprocess.run([exe, "-uroot", "-e", "USE " + db + "; " + sql],
+                       env=env, capture_output=True, text=True, encoding="utf-8", errors="replace")
+    if r.returncode != 0:
+        print("[警告] 数据库重置失败(测试仍继续):", r.stderr.strip()[:200])
+    else:
+        print("[重置] 数据库已清空,仅保留正式账号 stu001")
+
+
+def reset_redis():
+    """清掉点赞集合 / Agent 会话草稿 / 限流计数的残留 key"""
+    cli = _find_cmd(["redis-cli"], r"C:\Users\22254\Redis-x64-5.0.14.1\redis-cli.exe")
+    if not cli:
+        print("[跳过] 未找到 redis-cli,跳过 Redis 重置")
+        return
+    keys = []
+    for pat in ("post:likes:*", "agent:*", "rate_limit:*"):
+        out = subprocess.run([cli, "--scan", "--pattern", pat],
+                             capture_output=True, text=True).stdout
+        keys += [k for k in out.split() if k]
+    if keys:
+        subprocess.run([cli, "del"] + keys, capture_output=True)
+        print("[重置] Redis 已清理 %d 个残留 key" % len(keys))
+    else:
+        print("[重置] Redis 无残留 key")
+
+
+reset_db()
+reset_redis()
 # 随机后缀:保证每次运行注册的都是全新用户(可重复跑)
 suf = str(int(time.time() * 1000))[-6:]
 uA = "curl_regA" + suf
@@ -147,7 +211,8 @@ T("E9 删不存在的评论", st == 404, st)
 # ================= F. admin 权限 =================
 st, r = req("/admin/posts/%d" % postB, method="DELETE", token=tkA)
 T("F1 普通用户访问admin(应403)", st == 403, (st, r.get("code")))
-st, r = req("/login", body={"username": "admindemo", "password": "123456"})
+# 重置后仅保留正式账号 stu001(role=admin),用它验证管理员删帖
+st, r = req("/login", body={"username": "stu001", "password": "123456"})
 tkAdmin = r["data"]["token"] if st == 200 else ""
 if tkAdmin:
     st, r = req("/posts", token=tkAdmin, body={"title": "给admin删的帖", "content": "admin测试"})
@@ -155,7 +220,7 @@ if tkAdmin:
     st, _ = req("/admin/posts/%d" % pid, method="DELETE", token=tkAdmin)
     T("F2 admin删任意帖", st == 200, st)
 else:
-    print("[SKIP] F2 admin账号不可用(admindemo/123456 登录失败,跳过)")
+    print("[SKIP] F2 正式admin账号 stu001 登录失败(密码被改?),跳过")
 
 # ================= G. Agent 回归 =================
 st, r = chat("sa1", "看看帖子列表", tkA)
