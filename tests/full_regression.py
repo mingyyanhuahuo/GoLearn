@@ -3,6 +3,7 @@
 # 用法:先启动服务(go run .),然后 python tests/full_regression.py
 # 重置:运行前自动清空数据库(仅保留正式账号 stu001 及其帖子)和 Redis 残留
 # 幂等性:每次运行使用随机用户名,可重复执行
+#这份测试代码curl是我让ai根据后端功能生成的测试代码,所以ai味会很重
 import json, os, re, shutil, subprocess, sys, time, urllib.request, urllib.error
 
 sys.stdout.reconfigure(encoding="utf-8")
