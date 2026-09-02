@@ -5,6 +5,7 @@ import (
 	"day_4_1/dao"
 	"day_4_1/middleware"
 	"day_4_1/model"
+	"day_4_1/pkg/deepseek"
 	"day_4_1/pkg/jwtutil"
 	"day_4_1/pkg/logger"
 	"day_4_1/pkg/redisdb"
@@ -43,6 +44,7 @@ func main() {
 	if err := jwtutil.Init(config.GetConfig().JWT.Secret); err != nil {
 		log.Fatalf("JWT初始化失败: %v", err)
 	}
+	deepseek.Init(config.GetConfig().DeepSeek.ApiKey, config.GetConfig().DeepSeek.BaseUrl, config.GetConfig().DeepSeek.ModelFlash)
 	r := gin.Default()
 	r.Use(middleware.AccessLog())
 	r.Use(middleware.ErrorMiddleware())

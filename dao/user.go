@@ -17,3 +17,8 @@ func GetUserByUsername(username string) (model.User, error) {
 	result := db.Where("username = ?", username).First(&user)
 	return user, result.Error
 }
+func GetUserByPhone(phone string) (model.User, error) {
+	var user model.User
+	result := db.Where("phone_number = ?", phone).First(&user)
+	return user, result.Error
+}

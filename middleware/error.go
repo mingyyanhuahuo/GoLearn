@@ -2,10 +2,12 @@ package middleware
 
 import (
 	"day_4_1/pkg/errcode"
+	"day_4_1/pkg/logger"
 	"day_4_1/pkg/response"
 	"errors"
 
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 )
 
 func ErrorMiddleware() gin.HandlerFunc {
@@ -19,9 +21,10 @@ func ErrorMiddleware() gin.HandlerFunc {
 		err := errs.Last().Err
 		var bizErr *errcode.BizError
 		if ok := errors.As(err, &bizErr); ok {
-			response.Err(c, bizErr.HttpStatus, bizErr.Message)
+			response.Err(c, bizErr)
 			return
 		}
-		response.Err(c, 500, "服务器内部错误")
+		logger.Logger.Error("未知错误", zap.Error(err))
+		response.Err(c, errcode.ErrInternalServerError)
 	}
 }

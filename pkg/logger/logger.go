@@ -14,9 +14,9 @@ func InitLogger() {
 	os.MkdirAll("logs", 0755)
 	w := zapcore.AddSync(&lumberjack.Logger{
 		Filename:   "logs/app.log",
-		MaxSize:    300,
+		MaxSize:    1, //MB
 		MaxBackups: 7,
-		MaxAge:     30,
+		MaxAge:     30, //days
 		Compress:   true,
 	})
 	core := zapcore.NewCore(

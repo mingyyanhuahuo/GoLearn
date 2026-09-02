@@ -22,14 +22,17 @@ func CreatePost(userId uint, title, content string) (model.Post, error) {
 	if err := dao.GeneratePost(post); err != nil {
 		return model.Post{}, errcode.ErrDatabase
 	}
+	if user, err := dao.GetUserById(userId); err == nil {
+		post.Author = user
+	}
 	return *post, nil
 }
-func ListPosts(page uint) ([]model.Post, error) {
-	posts, err := dao.GetPostPage(page)
+func ListPosts(page uint, pageSize uint) ([]model.Post, int64, error) {
+	posts, total, err := dao.GetPostPage(page, pageSize)
 	if err != nil {
-		return []model.Post{}, errcode.ErrDatabase
+		return []model.Post{}, 0, errcode.ErrDatabase
 	}
-	return posts, nil
+	return posts, total, nil
 }
 func DeletePost(postId uint, role string, userId uint) error {
 	post, err := dao.GetPostById(postId)
@@ -37,7 +40,7 @@ func DeletePost(postId uint, role string, userId uint) error {
 		return errcode.ErrNotFoundPost
 	}
 	authorId := post.AuthorId
-	if role != "admin" && authorId != userId {
+	if !IsAdmin(role) && authorId != userId {
 		return errcode.ErrForbidden
 	}
 	if err := dao.DeletePost(postId); err != nil {
@@ -59,10 +62,10 @@ func GetDetailedPostById(postId uint) (model.Post, error) {
 	}
 	return post, nil
 }
-func GetPostPageHot(page uint) ([]model.Post, error) {
-	posts, err := dao.GetPostPageHot(page)
+func GetPostPageHot(page uint, pageSize uint) ([]model.Post, int64, error) {
+	posts, total, err := dao.GetPostPageHot(page, pageSize)
 	if err != nil {
-		return []model.Post{}, errcode.ErrDatabase
+		return []model.Post{}, 0, errcode.ErrDatabase
 	}
-	return posts, nil
+	return posts, total, nil
 }

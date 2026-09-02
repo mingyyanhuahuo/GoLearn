@@ -3,13 +3,14 @@ package dao
 import (
 	"context"
 
+	"day_4_1/model"
 	"day_4_1/pkg/redisdb"
 	"fmt"
 
 	"github.com/redis/go-redis/v9"
 )
 
-func GetLikePostIds(postids []uint, userId uint) ([]uint, error) {
+func GetLikesStatus(postids []uint, userId uint) (map[uint]bool, error) {
 	ctx := context.Background()
 	pipe := redisdb.Rdb.Pipeline()
 	cmds := make([]*redis.BoolCmd, len(postids))
@@ -22,19 +23,21 @@ func GetLikePostIds(postids []uint, userId uint) ([]uint, error) {
 	if err != nil {
 		return nil, err
 	}
-	likes := make([]uint, 0, len(postids))
+	result := make(map[uint]bool, len(postids))
 	for i, cmd := range cmds {
 		isMember, err := cmd.Result()
 		if err != nil {
 			return nil, err
 		}
-		if isMember {
-			likes = append(likes, postids[i])
-		}
+		result[postids[i]] = isMember
 	}
-	return likes, nil
+	return result, nil
 }
-
+func GetExistingLikePostIds(postids []uint) ([]uint, error) {
+	var ids []uint
+	err := db.Model(&model.Post{}).Where("id IN ?", postids).Pluck("id", &ids).Error
+	return ids, err
+}
 func ToggleLike(postId uint, userId uint) (bool, error) {
 	keys := fmt.Sprintf("post:likes:%d", postId)
 	added, err := redisdb.Rdb.SAdd(context.Background(), keys, userId).Result()

@@ -25,7 +25,6 @@ func GenerateComment(comment *model.Comment) error {
 		tx.Rollback()
 		return err
 	}
-
 	return tx.Commit().Error
 }
 func GetCommentById(commentId uint) (model.Comment, error) {

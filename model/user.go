@@ -6,9 +6,10 @@ import (
 
 type User struct {
 	Id          uint      `gorm:"primaryKey" json:"id"`
-	Username    string    `gorm:"size:15" json:"username"`
-	PhoneNumber string    `gorm:"size:11 unique" json:"phone_number"`
+	Username    string    `gorm:"size:32" json:"username"`
+	Name        string    `gorm:"size:32" json:"name"`
+	PhoneNumber string    `gorm:"size:11 unique" json:"-"`
 	PassHash    string    `json:"-"`
-	Role        string    `gorm:"default:user" json:"role"`
-	CreatedAt   time.Time `json:"created_at"`
+	Role        string    `gorm:"default:student" json:"role"`
+	CreatedAt   time.Time `json:"-"`
 }

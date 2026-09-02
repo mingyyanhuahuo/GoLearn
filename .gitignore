@@ -6,3 +6,7 @@ logs/
 
 # ===== 编译产物 =====
 *.exe
+
+# ===== Python 测试产物 =====
+tests/__pycache__/
+tests/apifox_capture/

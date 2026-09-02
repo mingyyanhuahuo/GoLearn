@@ -24,3 +24,9 @@ redis:
     password:
 jwt:
     secret: misakasayliumengyuyyds   # [狗头]
+deepseek:
+    api_key:                    # 填你的 DeepSeek API Key;留空 = Agent 纯本地规则模式(不联网,回复固定话术)
+    base_url:                   # 留空默认 https://api.deepseek.com
+    model-flash:                # 留空默认代码内置模型
+    model-pro:
+    model-flash-vision-exp:

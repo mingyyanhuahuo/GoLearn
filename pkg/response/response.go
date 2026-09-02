@@ -8,21 +8,36 @@ package response
 //     StatusNotFound             = 404  // "404 Not Found"
 //     StatusInternalServerError  = 500  // "500 Internal Server Error"
 import (
+	"day_4_1/pkg/errcode"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
-func OK(c *gin.Context, data any) {
-	c.JSON(http.StatusOK, gin.H{
-		"code": 200,
-		"msg":  "success",
-		"data": data})
+type resp struct {
+	Code int         `json:"code"`
+	Msg  string      `json:"msg"`
+	Data interface{} `json:"data"`
 }
-func Err(c *gin.Context, code int, msg string) {
-	c.JSON(code, gin.H{
-		"code": code,
-		"msg":  msg,
-		"data": nil,
+
+func OK(c *gin.Context, data any) {
+	c.JSON(http.StatusOK, resp{
+		Code: 0,
+		Msg:  "success",
+		Data: data,
+	})
+}
+func Created(c *gin.Context, data any) {
+	c.JSON(http.StatusCreated, resp{
+		Code: 0,
+		Msg:  "success",
+		Data: data,
+	})
+}
+func Err(c *gin.Context, bizErr *errcode.BizError) {
+	c.JSON(bizErr.HttpStatus, resp{
+		Code: bizErr.Code,
+		Msg:  bizErr.Message,
+		Data: nil,
 	})
 }

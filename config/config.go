@@ -7,11 +7,20 @@ import (
 )
 
 type Config struct {
-	Mysql  MysqlConfig  `yaml:"mysql"`
-	JWT    JWTConfig    `yaml:"jwt"`
-	Server ServerConfig `yaml:"server"`
-	Redis  RedisConfig  `yaml:"redis"`
+	Mysql    MysqlConfig    `yaml:"mysql"`
+	JWT      JWTConfig      `yaml:"jwt"`
+	Server   ServerConfig   `yaml:"server"`
+	Redis    RedisConfig    `yaml:"redis"`
+	DeepSeek DeepSeekConfig `yaml:"deepseek"`
 }
+type DeepSeekConfig struct {
+	ApiKey              string `mapstructure:"api_key"`
+	BaseUrl             string `mapstructure:"base_url"`
+	ModelFlash          string `mapstructure:"model-flash"`
+	ModelPro            string `mapstructure:"model-pro"`
+	ModelFlashVisionExp string `mapstructure:"model-flash-vision-exp"`
+}
+
 type MysqlConfig struct {
 	Dsn      string `yaml:"dsn"`
 	Port     string `yaml:"port"`

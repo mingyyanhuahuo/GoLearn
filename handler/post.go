@@ -12,35 +12,42 @@ import (
 )
 
 type PostReq struct {
-	Title   string `json:"title" binding:"required"`
-	Content string `json:"content" binding:"required,max=800"`
+	Title   string `json:"title" binding:"min=1,max=150"`
+	Content string `json:"content" binding:"omitempty,max=2000"`
 }
-type PostResp struct {
-	Id        uint      `json:"id"`
-	Title     string    `json:"title"`
-	Content   string    `json:"content"`
-	CreatedAt time.Time `json:"created_at"`
-	AuthorId  uint      `json:"author_id"`
+type CreatePostResp struct {
+	Id        uint       `json:"id"`
+	Title     string     `json:"title"`
+	Content   string     `json:"content"`
+	Author    model.User `json:"author"`
+	CreatedAt string     `json:"created_at"`
 }
+type PageMeta struct {
+	Page     uint  `json:"page"`
+	PageSize uint  `json:"page_size"`
+	Total    int64 `json:"total"`
+}
+
 type ListPostsResp struct {
-	Posts []model.Post `json:"posts"`
-	Page  uint         `json:"page"`
+	Items []PostItem `json:"items"`
+	Meta  PageMeta   `json:"meta"`
 }
+
 type DetailedPostResp struct {
-	Id         uint            `json:"id"`
-	Title      string          `json:"title"`
-	Content    string          `json:"content"`
-	CreatedAt  time.Time       `json:"created_at"`
-	LikeCount  uint            `json:"like_count"`
-	AuthorId   uint            `json:"author_id"`
-	AuthorName string          `json:"author_name"`
-	Comments   []model.Comment `json:"comments"`
+	Id           uint            `json:"id"`
+	Title        string          `json:"title"`
+	Content      string          `json:"content"`
+	Author       model.User      `json:"author"`
+	LikeCount    uint            `json:"like_count"`
+	CommentCount uint            `json:"comment_count"`
+	CreatedAt    time.Time       `json:"created_at"`
+	Comments     []model.Comment `json:"comments"`
 }
 
 func CreatePost(c *gin.Context) {
 	var req PostReq
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.Error(errcode.New(400, 10000, "请求参数错误: "+err.Error()))
+		BindError(c, err)
 		return
 	}
 	UserId, exists := c.Get("id")
@@ -53,47 +60,57 @@ func CreatePost(c *gin.Context) {
 		c.Error(err)
 		return
 	}
-	response.OK(c, PostResp{
+	response.Created(c, CreatePostResp{
 		Id:        post.Id,
 		Title:     post.Title,
 		Content:   post.Content,
-		AuthorId:  post.AuthorId,
-		CreatedAt: post.CreatedAt,
+		Author:    post.Author,
+		CreatedAt: post.CreatedAt.Format("2006-01-02 15:04:05"),
 	})
 }
 func ListPosts(c *gin.Context) {
 	pageStr := c.DefaultQuery("page", "1")
 	page, err := strconv.Atoi(pageStr)
-
-	if err != nil {
-		c.Error(errcode.New(400, 10000, "无效的页码: "+err.Error()))
-		return
-	}
-	if page < 1 {
+	if err != nil || page < 1 {
 		c.Error(errcode.New(400, 10000, "无效的页码"))
 		return
 	}
-	sort := c.DefaultQuery("sort", "")
-	if sort == "hot" {
-		posts, err := service.GetPostPageHot(uint(page))
-		if err != nil {
-			c.Error(err)
-			return
-		}
-		response.OK(c, ListPostsResp{
-			Posts: posts,
-			Page:  uint(page),
-		})
+	pageSizeStr := c.DefaultQuery("page_size", "20")
+	pageSize, err := strconv.Atoi(pageSizeStr)
+	if err != nil || pageSize < 1 || pageSize > 100 {
+		c.Error(errcode.New(400, 10000, "无效的页码大小"))
 		return
 	}
-	posts, err := service.ListPosts(uint(page))
+	sort := c.DefaultQuery("sort", "")
+	var posts []model.Post
+	var total int64
+	if sort == "hot" {
+		posts, total, err = service.GetPostPageHot(uint(page), uint(pageSize))
+	} else {
+		posts, total, err = service.ListPosts(uint(page), uint(pageSize))
+	}
 	if err != nil {
 		c.Error(err)
 		return
 	}
+	items := make([]PostItem, 0, len(posts))
+	for _, post := range posts {
+		items = append(items, PostItem{
+			Id:           post.Id,
+			Content:      post.Content,
+			Author:       post.Author,
+			LikeCount:    post.LikeCount,
+			CommentCount: post.CommentCount,
+			CreatedAt:    post.CreatedAt,
+		})
+	}
 	response.OK(c, ListPostsResp{
-		Posts: posts,
-		Page:  uint(page),
+		Items: items,
+		Meta: PageMeta{
+			Page:     uint(page),
+			PageSize: uint(pageSize),
+			Total:    total,
+		},
 	})
 
 }
@@ -101,7 +118,7 @@ func DeletePost(c *gin.Context) {
 	postIdStr := c.Param("post_id")
 	postId, err := strconv.Atoi(postIdStr)
 	if err != nil {
-		c.Error(errcode.New(400, 10000, "帖子ID格式错误: "+err.Error()))
+		c.Error(errcode.New(400, 10000, "帖子ID格式错误"))
 		return
 	}
 	role, _ := c.Get("role")
@@ -115,13 +132,13 @@ func DeletePost(c *gin.Context) {
 		c.Error(err)
 		return
 	}
-	response.OK(c, "删除帖子成功")
+	response.OK(c, nil)
 }
 func GetDetailedPost(c *gin.Context) {
 	postIdStr := c.Param("post_id")
 	postId, err := strconv.Atoi(postIdStr)
 	if err != nil {
-		c.Error(errcode.New(400, 10000, "id格式错误: "+err.Error()))
+		c.Error(errcode.New(400, 10000, "id格式错误"))
 		return
 	}
 	post, err := service.GetDetailedPostById(uint(postId))
@@ -131,13 +148,13 @@ func GetDetailedPost(c *gin.Context) {
 		return
 	}
 	response.OK(c, DetailedPostResp{
-		Id:         post.Id,
-		Title:      post.Title,
-		Content:    post.Content,
-		CreatedAt:  post.CreatedAt,
-		AuthorId:   post.AuthorId,
-		LikeCount:  post.LikeCount,
-		AuthorName: post.Author.Username,
-		Comments:   post.Comments,
+		Id:           post.Id,
+		Title:        post.Title,
+		Content:      post.Content,
+		Author:       post.Author,
+		LikeCount:    post.LikeCount,
+		CommentCount: post.CommentCount,
+		CreatedAt:    post.CreatedAt,
+		Comments:     post.Comments,
 	})
 }

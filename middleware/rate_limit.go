@@ -30,7 +30,7 @@ func RateLimitMiddleware() gin.HandlerFunc {
 			redisdb.Rdb.Expire(ctx, key, 2*time.Second)
 		}
 		if n > int64(10) {
-			c.Error(errcode.New(429, 10010, "请求过于频繁，请稍后再试"))
+			c.Error(errcode.ErrRateLimit)
 			c.Abort()
 			return
 		}
